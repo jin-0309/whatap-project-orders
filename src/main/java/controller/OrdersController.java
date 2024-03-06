@@ -3,6 +3,7 @@ package controller;
 import dto.req.OrdersRequestDto;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -41,5 +42,12 @@ public class OrdersController {
     @Path("/get")
     public Response getOrders() {
         return Response.ok(ordersService.findAll()).build();
+    }
+
+    @DELETE
+    @Path("/delete/{orders_id}")
+    public Response deleteOrder(@PathParam("orders_id") Long ordersId) {
+        ordersService.deleteById(ordersId);
+        return Response.status(Status.NO_CONTENT).build();
     }
 }

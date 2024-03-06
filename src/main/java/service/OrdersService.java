@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import repository.OrdersRepository;
 
 @ApplicationScoped
@@ -49,6 +50,11 @@ public class OrdersService {
     public List<OrderResponseDto> findAll() {
         PanacheQuery<Orders> dtos = ordersRepository.findAll();
         return dtos.stream().map(this::toDto).toList();
+    }
+
+    public void deleteById(Long ordersId) {
+        Optional<Orders> orders = ordersRepository.findByIdOptional(ordersId);
+        ordersRepository.delete(orders.orElseThrow());
     }
 
     private OrderResponseDto toDto(Orders orders) {
