@@ -1,7 +1,11 @@
 package service;
 
 import dto.req.OrdersRequestDto;
+import dto.res.OrderResponseDto;
+import dto.res.OrderResponseDto.OrdersLineInfo;
+import dto.res.ProductResponseDto;
 import entity.Orders;
+import entity.OrdersLine;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -33,6 +37,33 @@ public class OrdersService {
         ordersLineService.save(orders, dto.getProductWithQuantity());
         ordersRepository.persist(orders);
         return orders.getId();
+    }
+
+    public OrderResponseDto findById(Long id) {
+        Orders orders = ordersRepository.findByIdOptional(id).orElseThrow();
+        return toDto(orders);
+    }
+
+    private OrderResponseDto toDto(Orders orders) {
+        return OrderResponseDto.builder()
+                .orderId(orders.getId())
+                .userId(orders.getUserId())
+                .orderDate(orders.getOrderDate())
+                .modifiedDate(orders.getModifiedDate())
+                .totalPrice(orders.getTotalPrice())
+                .ordersLineInfos(orders.getOrdersLines().stream().map(this::toInfo).toList())
+                .build();
+    }
+
+    private OrdersLineInfo toInfo(OrdersLine ordersLine) {
+        ProductResponseDto productResponseDto = productService.getProductById(ordersLine.getProductId());
+        return OrdersLineInfo.builder()
+                .ordersLineId(ordersLine.getId())
+                .productId(ordersLine.getProductId())
+                .productName(productResponseDto.getName())
+                .quantity(ordersLine.getQuantity())
+                .subPrice(ordersLine.getQuantity()*productResponseDto.getPrice())
+                .build();
     }
 
     private Double getTotalPrice(OrdersRequestDto dto) {

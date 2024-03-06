@@ -1,6 +1,7 @@
 package entity;
 
 import jakarta.annotation.Nullable;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -38,7 +39,7 @@ public class Orders {
     @Column(name = "total_price")
     private Double totalPrice;
 
-    @OneToMany(mappedBy = "orders")
+    @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL)
     private List<OrdersLine> ordersLines = new ArrayList<>();
 
     @Builder
@@ -48,7 +49,7 @@ public class Orders {
         this.totalPrice = totalPrice;
     }
 
-    public void addOrderLine(OrdersLine ordersLine) {
+    public void addOrdersLine(OrdersLine ordersLine) {
         this.ordersLines.add(ordersLine);
     }
 }

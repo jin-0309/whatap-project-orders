@@ -3,6 +3,7 @@ package controller;
 import dto.req.OrdersRequestDto;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -28,5 +29,11 @@ public class OrdersController {
     @Path("/add")
     public Response orderProduct(OrdersRequestDto dto) {
         return Response.status(Status.CREATED).entity(ordersService.save(dto)).build();
+    }
+
+    @GET
+    @Path("/get/{orders_id}")
+    public Response getOrder(@PathParam("orders_id") Long ordersId) {
+        return Response.ok(ordersService.findById(ordersId)).build();
     }
 }
