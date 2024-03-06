@@ -7,14 +7,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Cleanup;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "orders_line")
 public class OrdersLine {
 
     @Id
@@ -26,6 +29,7 @@ public class OrdersLine {
     @JoinColumn(name = "orders_id")
     private Orders orders;
 
+    @Column(name = "product_id")
     private Long productId;
 
     private int quantity;

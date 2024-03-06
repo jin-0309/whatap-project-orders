@@ -1,5 +1,6 @@
 package entity;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,20 +25,30 @@ public class Orders {
     @Column(name = "orders_id")
     private Long id;
 
+    @Column(name = "user_id")
     private Long userId;
 
+    @Column(name = "order_date")
     private LocalDateTime orderDate;
 
+    @Nullable
+    @Column(name = "modified_date")
+    private LocalDateTime modifiedDate;
+
+    @Column(name = "total_price")
     private Double totalPrice;
 
     @OneToMany(mappedBy = "orders")
     private List<OrdersLine> ordersLines = new ArrayList<>();
 
     @Builder
-    public Orders(Long id, Long userId, LocalDateTime orderDate, Double totalPrice) {
-        this.id = id;
+    public Orders(Long userId, LocalDateTime orderDate, Double totalPrice) {
         this.userId = userId;
         this.orderDate = orderDate;
         this.totalPrice = totalPrice;
+    }
+
+    public void addOrderLine(OrdersLine ordersLine) {
+        this.ordersLines.add(ordersLine);
     }
 }

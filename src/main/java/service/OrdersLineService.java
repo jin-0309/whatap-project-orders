@@ -17,8 +17,7 @@ public class OrdersLineService {
         this.ordersLineRepository = ordersLineRepository;
     }
 
-    public int save(Orders orders, Map<Long, Integer> productWithQuantity) {
-        int count = 0;
+    public void save(Orders orders, Map<Long, Integer> productWithQuantity) {
         for (Map.Entry<Long, Integer> info : productWithQuantity.entrySet()) {
             OrdersLine ordersLine = OrdersLine.builder()
                    .orders(orders)
@@ -26,8 +25,7 @@ public class OrdersLineService {
                    .quantity(info.getValue())
                    .build();
            ordersLineRepository.persist(ordersLine);
-           count++;
+           orders.addOrderLine(ordersLine);
         }
-        return count;
     }
 }

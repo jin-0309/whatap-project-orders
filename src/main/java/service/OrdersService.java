@@ -30,8 +30,8 @@ public class OrdersService {
                 .orderDate(LocalDateTime.now())
                 .totalPrice(getTotalPrice(dto))
                 .build();
-        ordersRepository.persist(orders);
         ordersLineService.save(orders, dto.getProductWithQuantity());
+        ordersRepository.persist(orders);
         return orders.getId();
     }
 

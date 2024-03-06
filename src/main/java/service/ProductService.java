@@ -13,10 +13,6 @@ public class ProductService {
     @RestClient
     ProductAdapter productAdapter;
 
-//    @Inject
-//    @ConfigProperty(name = "product.service.url")
-//    String url;
-
     public ProductResponseDto getProductById(Long id) {
         return productAdapter.getProduct(id);
     }
