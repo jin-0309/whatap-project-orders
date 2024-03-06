@@ -36,4 +36,10 @@ public class OrdersController {
     public Response getOrder(@PathParam("orders_id") Long ordersId) {
         return Response.ok(ordersService.findById(ordersId)).build();
     }
+
+    @GET
+    @Path("/get")
+    public Response getOrders() {
+        return Response.ok(ordersService.findAll()).build();
+    }
 }

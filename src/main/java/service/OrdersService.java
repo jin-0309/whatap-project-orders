@@ -6,10 +6,12 @@ import dto.res.OrderResponseDto.OrdersLineInfo;
 import dto.res.ProductResponseDto;
 import entity.Orders;
 import entity.OrdersLine;
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import repository.OrdersRepository;
 
@@ -42,6 +44,11 @@ public class OrdersService {
     public OrderResponseDto findById(Long id) {
         Orders orders = ordersRepository.findByIdOptional(id).orElseThrow();
         return toDto(orders);
+    }
+
+    public List<OrderResponseDto> findAll() {
+        PanacheQuery<Orders> dtos = ordersRepository.findAll();
+        return dtos.stream().map(this::toDto).toList();
     }
 
     private OrderResponseDto toDto(Orders orders) {
