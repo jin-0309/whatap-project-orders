@@ -1,5 +1,6 @@
 package entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,9 +24,9 @@ public class OrdersLine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "orders_line_id")
-    private Long id;
+    private Long ordersLineId;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "orders_id")
     private Orders orders;
 
@@ -35,10 +36,14 @@ public class OrdersLine {
     private int quantity;
 
     @Builder
-    public OrdersLine(Long id, Orders orders, Long productId, int quantity) {
-        this.id = id;
+    public OrdersLine(Long ordersLineId, Orders orders, Long productId, int quantity) {
+        this.ordersLineId = ordersLineId;
         this.orders = orders;
         this.productId = productId;
         this.quantity = quantity;
+    }
+
+    public void deleteOrderLine() {
+        this.orders = null;
     }
 }

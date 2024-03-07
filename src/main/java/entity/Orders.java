@@ -24,7 +24,7 @@ public class Orders {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "orders_id")
-    private Long id;
+    private Long ordersId;
 
     @Column(name = "user_id")
     private Long userId;
@@ -39,7 +39,7 @@ public class Orders {
     @Column(name = "total_price")
     private Double totalPrice;
 
-    @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrdersLine> ordersLines = new ArrayList<>();
 
     @Builder
@@ -51,5 +51,20 @@ public class Orders {
 
     public void addOrdersLine(OrdersLine ordersLine) {
         this.ordersLines.add(ordersLine);
+    }
+
+    public void updateOrders(List<OrdersLine> updateOrdersLines, Double totalPrice) {
+        this.modifiedDate = LocalDateTime.now();
+        this.totalPrice = totalPrice;
+        for (OrdersLine ordersLine : updateOrdersLines) {
+            addOrdersLine(ordersLine);
+        }
+    }
+
+    public void removeOrderLine(List<OrdersLine> deleteOrdersLines) {
+        for (OrdersLine ordersLine : deleteOrdersLines) {
+            ordersLines.remove(ordersLine);
+            ordersLine.deleteOrderLine();
+        }
     }
 }

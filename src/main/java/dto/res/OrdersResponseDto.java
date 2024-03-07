@@ -1,24 +1,23 @@
 package dto.res;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class OrderResponseDto {
+public class OrdersResponseDto {
 
     private Long orderId;
     private Long userId;
     private LocalDateTime orderDate;
     private LocalDateTime modifiedDate;
     private Double totalPrice;
-    private List<OrdersLineInfo> ordersLineInfos = new ArrayList<>();
+    private List<OrdersLineInfo> ordersLineInfos;
 
     @Builder
-    public OrderResponseDto(Long orderId, Long userId, LocalDateTime orderDate, LocalDateTime modifiedDate,
-                            Double totalPrice, List<OrdersLineInfo> ordersLineInfos) {
+    public OrdersResponseDto(Long orderId, Long userId, LocalDateTime orderDate, LocalDateTime modifiedDate,
+                             Double totalPrice, List<OrdersLineInfo> ordersLineInfos) {
         this.orderId = orderId;
         this.userId = userId;
         this.orderDate = orderDate;

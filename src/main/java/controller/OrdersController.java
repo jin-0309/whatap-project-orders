@@ -1,11 +1,13 @@
 package controller;
 
 import dto.req.OrdersRequestDto;
+import dto.req.OrdersUpdateRequestDto;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -49,5 +51,11 @@ public class OrdersController {
     public Response deleteOrder(@PathParam("orders_id") Long ordersId) {
         ordersService.deleteById(ordersId);
         return Response.status(Status.NO_CONTENT).build();
+    }
+
+    @PUT
+    @Path("/update")
+    public Response changeOrder(OrdersUpdateRequestDto dto) {
+        return Response.status(Status.CREATED).entity(ordersService.update(dto)).build();
     }
 }

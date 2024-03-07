@@ -1,8 +1,10 @@
 package service;
 
+import dto.req.OrdersLineRequestDto;
 import dto.req.OrdersRequestDto;
-import dto.res.OrderResponseDto;
-import dto.res.OrderResponseDto.OrdersLineInfo;
+import dto.req.OrdersUpdateRequestDto;
+import dto.res.OrdersResponseDto;
+import dto.res.OrdersResponseDto.OrdersLineInfo;
 import dto.res.ProductResponseDto;
 import entity.Orders;
 import entity.OrdersLine;
@@ -35,19 +37,21 @@ public class OrdersService {
         Orders orders = Orders.builder()
                 .userId(dto.getUserId())
                 .orderDate(LocalDateTime.now())
-                .totalPrice(getTotalPrice(dto))
+                .totalPrice(getTotalPrice(dto.getOrdersLineRequestDto()))
                 .build();
-        ordersLineService.save(orders, dto.getProductWithQuantity());
+        for (OrdersLineRequestDto ordersLineRequestDto : dto.getOrdersLineRequestDto()) {
+            ordersLineService.save(orders, ordersLineRequestDto);
+        }
         ordersRepository.persist(orders);
-        return orders.getId();
+        return orders.getOrdersId();
     }
 
-    public OrderResponseDto findById(Long id) {
+    public OrdersResponseDto findById(Long id) {
         Orders orders = ordersRepository.findByIdOptional(id).orElseThrow();
         return toDto(orders);
     }
 
-    public List<OrderResponseDto> findAll() {
+    public List<OrdersResponseDto> findAll() {
         PanacheQuery<Orders> dtos = ordersRepository.findAll();
         return dtos.stream().map(this::toDto).toList();
     }
@@ -57,9 +61,18 @@ public class OrdersService {
         ordersRepository.delete(orders.orElseThrow());
     }
 
-    private OrderResponseDto toDto(Orders orders) {
-        return OrderResponseDto.builder()
-                .orderId(orders.getId())
+    public Long update(OrdersUpdateRequestDto dto) {
+        Orders orders = ordersRepository.findByIdOptional(dto.getOrdersId()).orElseThrow();
+        orders.removeOrderLine(ordersLineService.findByOrdersId(dto.getOrdersId()));
+        orders.updateOrders(ordersLineService.findOrdersLineByDto(dto.getOrdersLineRequestDto(), orders),
+                getTotalPrice(dto.getOrdersLineRequestDto()));
+        ordersRepository.persist(orders);
+        return orders.getOrdersId();
+    }
+
+    private OrdersResponseDto toDto(Orders orders) {
+        return OrdersResponseDto.builder()
+                .orderId(orders.getOrdersId())
                 .userId(orders.getUserId())
                 .orderDate(orders.getOrderDate())
                 .modifiedDate(orders.getModifiedDate())
@@ -71,7 +84,7 @@ public class OrdersService {
     private OrdersLineInfo toInfo(OrdersLine ordersLine) {
         ProductResponseDto productResponseDto = productService.getProductById(ordersLine.getProductId());
         return OrdersLineInfo.builder()
-                .ordersLineId(ordersLine.getId())
+                .ordersLineId(ordersLine.getOrdersLineId())
                 .productId(ordersLine.getProductId())
                 .productName(productResponseDto.getName())
                 .quantity(ordersLine.getQuantity())
@@ -79,12 +92,11 @@ public class OrdersService {
                 .build();
     }
 
-    private Double getTotalPrice(OrdersRequestDto dto) {
+    private Double getTotalPrice(List<OrdersLineRequestDto> dto) {
         double totalPrice = 0.0;
-        for (Map.Entry<Long, Integer> order : dto.getProductWithQuantity().entrySet()) {
-            Double price = productService.getProductById(order.getKey()).getPrice();
-            int quantity = order.getValue();
-            totalPrice += price*quantity;
+        for (OrdersLineRequestDto ordersLine : dto) {
+            Double price = productService.getProductById(ordersLine.getProductId()).getPrice();
+            totalPrice += price * ordersLine.getQuantity();
         }
         return totalPrice;
     }

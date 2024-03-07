@@ -8,4 +8,7 @@ import java.util.List;
 @ApplicationScoped
 public class OrdersLineRepository implements PanacheRepository<OrdersLine> {
 
+    public List<OrdersLine> findByOrdersId(Long ordersId) {
+        return list("orders.id", ordersId);
+    }
 }
