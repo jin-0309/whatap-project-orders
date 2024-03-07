@@ -2,6 +2,7 @@ package service;
 
 import adapter.ProductAdapter;
 import dto.res.ProductResponseDto;
+import exception.ProductNotFoundException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -14,7 +15,13 @@ public class ProductService {
     ProductAdapter productAdapter;
 
     public ProductResponseDto getProductById(Long id) {
-        return productAdapter.getProduct(id);
+        ProductResponseDto productResponseDto;
+        try {
+            productResponseDto = productAdapter.getProduct(id);
+        } catch (RuntimeException e) {
+            throw new ProductNotFoundException();
+        }
+        return productResponseDto;
     }
 
 }

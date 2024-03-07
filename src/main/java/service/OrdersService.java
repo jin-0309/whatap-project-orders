@@ -8,6 +8,7 @@ import dto.res.OrdersResponseDto.OrdersLineInfo;
 import dto.res.ProductResponseDto;
 import entity.Orders;
 import entity.OrdersLine;
+import exception.OrdersNotFoundException;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -47,7 +48,7 @@ public class OrdersService {
     }
 
     public OrdersResponseDto findById(Long id) {
-        Orders orders = ordersRepository.findByIdOptional(id).orElseThrow();
+        Orders orders = ordersRepository.findByIdOptional(id).orElseThrow(OrdersNotFoundException::new);
         return toDto(orders);
     }
 
@@ -58,11 +59,11 @@ public class OrdersService {
 
     public void deleteById(Long ordersId) {
         Optional<Orders> orders = ordersRepository.findByIdOptional(ordersId);
-        ordersRepository.delete(orders.orElseThrow());
+        ordersRepository.delete(orders.orElseThrow(OrdersNotFoundException::new));
     }
 
     public Long update(OrdersUpdateRequestDto dto) {
-        Orders orders = ordersRepository.findByIdOptional(dto.getOrdersId()).orElseThrow();
+        Orders orders = ordersRepository.findByIdOptional(dto.getOrdersId()).orElseThrow(OrdersNotFoundException::new);
         orders.removeOrderLine(ordersLineService.findByOrdersId(dto.getOrdersId()));
         orders.updateOrders(ordersLineService.findOrdersLineByDto(dto.getOrdersLineRequestDto(), orders),
                 getTotalPrice(dto.getOrdersLineRequestDto()));
