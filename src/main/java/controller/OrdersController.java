@@ -2,6 +2,7 @@ package controller;
 
 import dto.req.OrdersRequestDto;
 import dto.req.OrdersUpdateRequestDto;
+import dto.res.OrdersResponseDto;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -14,6 +15,11 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import service.OrdersService;
 
 @Path("/orders")
@@ -30,24 +36,34 @@ public class OrdersController {
 
     @POST
     @Path("/add")
+    @Operation(summary = "주문 추가")
+    @APIResponse(responseCode = "201", content = {@Content(schema = @Schema(implementation = Long.class))})
     public Response orderProduct(OrdersRequestDto dto) {
         return Response.status(Status.CREATED).entity(ordersService.save(dto)).build();
     }
 
     @GET
     @Path("/get/{orders_id}")
+    @Operation(summary = "주문 조회")
+    @APIResponse(responseCode = "200",
+    content = @Content(schema = @Schema(implementation = OrdersResponseDto.class)))
     public Response getOrder(@PathParam("orders_id") Long ordersId) {
         return Response.ok(ordersService.findById(ordersId)).build();
     }
 
     @GET
     @Path("/get")
+    @Operation(summary = "주문 목록 조회")
+    @APIResponse(responseCode = "200",
+    content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = OrdersResponseDto.class)))
     public Response getOrders() {
         return Response.ok(ordersService.findAll()).build();
     }
 
     @DELETE
     @Path("/delete/{orders_id}")
+    @Operation(summary = "주문 삭제")
+    @APIResponse(responseCode = "204")
     public Response deleteOrder(@PathParam("orders_id") Long ordersId) {
         ordersService.deleteById(ordersId);
         return Response.status(Status.NO_CONTENT).build();
@@ -55,6 +71,9 @@ public class OrdersController {
 
     @PUT
     @Path("/update")
+    @Operation(summary = "주문 변경")
+    @APIResponse(responseCode = "201",
+    content = @Content(schema = @Schema(implementation = Long.class)))
     public Response changeOrder(OrdersUpdateRequestDto dto) {
         return Response.status(Status.CREATED).entity(ordersService.update(dto)).build();
     }
