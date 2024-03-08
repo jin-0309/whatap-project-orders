@@ -33,6 +33,7 @@ public class OrdersLineService {
                .quantity(dto.getQuantity())
                .build();
        orders.addOrdersLine(ordersLine);
+       ordersLineRepository.persist(ordersLine);
        return ordersLine;
     }
 
@@ -40,7 +41,7 @@ public class OrdersLineService {
         return ordersLineRepository.findByOrdersId(ordersId);
     }
 
-    public List<OrdersLine> findOrdersLineByDto(List<OrdersLineRequestDto> dtos, Orders orders) {
+    public List<OrdersLine> getOrdersLinesByDtos(List<OrdersLineRequestDto> dtos, Orders orders) {
         List<OrdersLine> ordersLines = new ArrayList<>();
         for (OrdersLineRequestDto dto : dtos) {
             ordersLines.add(save(orders, dto));

@@ -65,7 +65,7 @@ public class OrdersService {
     public Long update(OrdersUpdateRequestDto dto) {
         Orders orders = ordersRepository.findByIdOptional(dto.getOrdersId()).orElseThrow(OrdersNotFoundException::new);
         orders.removeOrderLine(ordersLineService.findByOrdersId(dto.getOrdersId()));
-        orders.updateOrders(ordersLineService.findOrdersLineByDto(dto.getOrdersLineRequestDto(), orders),
+        orders.updateOrders(ordersLineService.getOrdersLinesByDtos(dto.getOrdersLineRequestDto(), orders),
                 getTotalPrice(dto.getOrdersLineRequestDto()));
         ordersRepository.persist(orders);
         return orders.getOrdersId();

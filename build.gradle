@@ -18,6 +18,7 @@ dependencies {
     implementation 'io.quarkus:quarkus-arc'
     implementation 'org.projectlombok:lombok:1.18.28'
     implementation 'io.quarkus:quarkus-smallrye-openapi'
+    implementation 'io.quarkus:quarkus-jdbc-h2'
     annotationProcessor 'org.projectlombok:lombok:1.18.28'
     testImplementation 'io.quarkus:quarkus-junit5'
 }

@@ -10,4 +10,9 @@ public class OrdersUpdateRequestDto {
     private Long ordersId;
     private List<OrdersLineRequestDto> ordersLineRequestDto;
 
+    @Builder
+    public OrdersUpdateRequestDto(Long ordersId, List<OrdersLineRequestDto> ordersLineRequestDto) {
+        this.ordersId = ordersId;
+        this.ordersLineRequestDto = ordersLineRequestDto;
+    }
 }
