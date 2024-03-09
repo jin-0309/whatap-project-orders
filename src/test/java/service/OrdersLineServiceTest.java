@@ -2,20 +2,24 @@ package service;
 
 import dto.req.OrdersLineRequestDto;
 import dto.req.OrdersRequestDto;
+import dto.res.ProductResponseDto;
 import entity.Orders;
 import entity.OrdersLine;
+import io.quarkus.test.InjectMock;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import repository.OrdersLineRepository;
 
 @QuarkusTest
-@Transactional
+@TestTransaction
 class OrdersLineServiceTest {
 
     @Inject
@@ -26,6 +30,20 @@ class OrdersLineServiceTest {
 
     @Inject
     OrdersService ordersService;
+
+    @InjectMock
+    ProductService productService;
+
+    @BeforeEach
+    void setUp() {
+        ProductResponseDto productResponseDto = ProductResponseDto.builder()
+                .id(1L)
+                .name("test")
+                .price(1000.)
+                .description("test")
+                .build();
+        Mockito.when(productService.getProductById(1L)).thenReturn(productResponseDto);
+    }
 
     @Test
     void save() {

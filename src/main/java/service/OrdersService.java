@@ -53,8 +53,8 @@ public class OrdersService {
     }
 
     public List<OrdersResponseDto> findAll() {
-        PanacheQuery<Orders> dtos = ordersRepository.findAll();
-        return dtos.stream().map(this::toDto).toList();
+        PanacheQuery<Orders> entities = ordersRepository.findAll();
+        return entities.stream().map(this::toDto).toList();
     }
 
     public void deleteById(Long ordersId) {

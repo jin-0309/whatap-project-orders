@@ -1,7 +1,5 @@
 package service;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import exception.SleepQueryException;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -13,8 +11,10 @@ class UtilityServiceTest {
 
     @Inject
     UtilityService utilityService;
+
     @Test
     void sleep() {
-        Assertions.assertThrows(SleepQueryException.class, () -> utilityService.sleep(1L));
+        Exception exception = Assertions.assertThrows(SleepQueryException.class, () -> utilityService.sleep(1L));
+        Assertions.assertTrue(exception.getMessage().contains("sleep time = "));
     }
 }

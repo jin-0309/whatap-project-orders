@@ -1,28 +1,25 @@
 package service;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import dto.req.OrdersLineRequestDto;
 import dto.req.OrdersRequestDto;
 import dto.req.OrdersUpdateRequestDto;
 import dto.res.OrdersResponseDto;
+import dto.res.ProductResponseDto;
 import entity.Orders;
-import entity.OrdersLine;
+import io.quarkus.test.InjectMock;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import repository.OrdersLineRepository;
+import org.mockito.Mockito;
 import repository.OrdersRepository;
 
 @QuarkusTest
-@Transactional
+@TestTransaction
 class OrdersServiceTest {
 
     @Inject
@@ -30,6 +27,27 @@ class OrdersServiceTest {
 
     @Inject
     OrdersService ordersService;
+
+    @InjectMock
+    ProductService productService;
+
+    @BeforeEach
+    void setUp() {
+        ProductResponseDto productResponseDto1 = ProductResponseDto.builder()
+                .id(1L)
+                .name("test")
+                .price(1000.)
+                .description("test")
+                .build();
+        ProductResponseDto productResponseDto = ProductResponseDto.builder()
+                .id(2L)
+                .name("test")
+                .price(1000.)
+                .description("test")
+                .build();
+        Mockito.when(productService.getProductById(1L)).thenReturn(productResponseDto1);
+        Mockito.when(productService.getProductById(2L)).thenReturn(productResponseDto);
+    }
 
     @Test
     void save() {
@@ -81,6 +99,9 @@ class OrdersServiceTest {
         Long ordersId1 = ordersService.save(ordersRequestDto1);
         Long ordersId2 = ordersService.save(ordersRequestDto2);
         List<OrdersResponseDto> result = ordersService.findAll();
+        for (OrdersResponseDto dto : result) {
+            System.out.println(dto.getOrderId());
+        }
         Assertions.assertEquals(2, result.size());
         Assertions.assertTrue(result.stream().anyMatch(dto -> dto.getOrderId().equals(ordersId1)));
         Assertions.assertTrue(result.stream().anyMatch(dto -> dto.getOrderId().equals(ordersId2)));
@@ -123,6 +144,7 @@ class OrdersServiceTest {
                 .ordersLineRequestDto(new ArrayList<>(List.of(ordersLineRequestDto2)))
                 .build();
         ordersService.update(ordersUpdateRequestDto);
-        Assertions.assertEquals(2L, ordersRepository.findById(ordersId).getOrdersLines().stream().findFirst().get().getProductId());
+        Assertions.assertEquals(2L,
+                ordersRepository.findById(ordersId).getOrdersLines().stream().findFirst().get().getProductId());
     }
 }
