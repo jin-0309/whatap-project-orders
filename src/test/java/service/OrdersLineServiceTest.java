@@ -80,7 +80,7 @@ class OrdersLineServiceTest {
     }
 
     @Test
-    void getOrdersLinesByDtos() {
+    void getOrdersLines() {
         Orders orders = Orders.builder()
                 .userId(1L)
                 .totalPrice(1000.0)

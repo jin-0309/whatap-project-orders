@@ -6,6 +6,7 @@ import dto.req.OrdersUpdateRequestDto;
 import dto.res.OrdersResponseDto;
 import dto.res.ProductResponseDto;
 import entity.Orders;
+import exception.OrdersNotFoundException;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
@@ -79,6 +80,7 @@ class OrdersServiceTest {
         Long ordersId = ordersService.save(ordersRequestDto);
         OrdersResponseDto ordersResponseDto = ordersService.findById(ordersId);
         Assertions.assertEquals(ordersResponseDto.getOrderId(), ordersId);
+        Assertions.assertThrows(OrdersNotFoundException.class, () -> ordersService.findById(2L));
     }
 
     @Test
@@ -122,6 +124,7 @@ class OrdersServiceTest {
         Assertions.assertNotNull(ordersRepository.findById(ordersId));
         ordersService.deleteById(ordersId);
         Assertions.assertNull(ordersRepository.findById(ordersId));
+        Assertions.assertThrows(OrdersNotFoundException.class, () -> ordersService.deleteById(2L));
     }
 
     @Test
@@ -139,12 +142,16 @@ class OrdersServiceTest {
                 .ordersLineRequestDto(new ArrayList<>(List.of(ordersLineRequestDto1)))
                 .build();
         Long ordersId = ordersService.save(ordersRequestDto);
-        OrdersUpdateRequestDto ordersUpdateRequestDto = OrdersUpdateRequestDto.builder()
+        OrdersUpdateRequestDto ordersUpdateRequestDto1 = OrdersUpdateRequestDto.builder()
                 .ordersId(ordersId)
                 .ordersLineRequestDto(new ArrayList<>(List.of(ordersLineRequestDto2)))
                 .build();
-        ordersService.update(ordersUpdateRequestDto);
+        ordersService.update(ordersUpdateRequestDto1);
         Assertions.assertEquals(2L,
                 ordersRepository.findById(ordersId).getOrdersLines().stream().findFirst().get().getProductId());
+        OrdersUpdateRequestDto ordersUpdateRequestDto2 = OrdersUpdateRequestDto.builder()
+                .ordersId(2L)
+                .build();
+        Assertions.assertThrows(OrdersNotFoundException.class, () -> ordersService.update(ordersUpdateRequestDto2));
     }
 }
