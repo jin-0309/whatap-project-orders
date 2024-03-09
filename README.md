@@ -19,7 +19,8 @@
 언어: Java 17 <br>
 프레임워크: Quarkus 3.8.1 <br>
 데이터베이스: PostgreSQL <br>
-ORM: panache
+ORM: panache <br>
+port: 8081
 
 ---
 
@@ -81,13 +82,13 @@ java
 | +--OrdersRepository.java
 |
 +--service
-+--OrdersLineService.java
-|
-+--OrdersService.java
-|
-+--ProductService.java
-|
-+--UtilityService.java
+  +--OrdersLineService.java
+  |
+  +--OrdersService.java
+  |
+  +--ProductService.java
+  |
+  +--UtilityService.java
 ```
 
 ---
