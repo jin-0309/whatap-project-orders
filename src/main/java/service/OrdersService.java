@@ -15,7 +15,6 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import repository.OrdersRepository;
 
@@ -28,7 +27,8 @@ public class OrdersService {
     ProductService productService;
 
     @Inject
-    public OrdersService(OrdersLineService ordersLineService, OrdersRepository ordersRepository, ProductService productService) {
+    public OrdersService(OrdersLineService ordersLineService, OrdersRepository ordersRepository,
+                         ProductService productService) {
         this.ordersLineService = ordersLineService;
         this.ordersRepository = ordersRepository;
         this.productService = productService;
@@ -65,8 +65,8 @@ public class OrdersService {
     public Long update(OrdersUpdateRequestDto dto) {
         Orders orders = ordersRepository.findByIdOptional(dto.getOrdersId()).orElseThrow(OrdersNotFoundException::new);
         orders.removeOrderLine(ordersLineService.findByOrdersId(dto.getOrdersId()));
-        orders.updateOrders(ordersLineService.getOrdersLinesByDtos(dto.getOrdersLineRequestDto(), orders),
-                getTotalPrice(dto.getOrdersLineRequestDto()));
+        List<OrdersLine> ordersLines = ordersLineService.getOrdersLines(dto.getOrdersLineRequestDto(), orders);
+        orders.updateOrders(ordersLines, getTotalPrice(dto.getOrdersLineRequestDto()));
         ordersRepository.persist(orders);
         return orders.getOrdersId();
     }
@@ -89,7 +89,7 @@ public class OrdersService {
                 .productId(ordersLine.getProductId())
                 .productName(productResponseDto.getName())
                 .quantity(ordersLine.getQuantity())
-                .subPrice(ordersLine.getQuantity()*productResponseDto.getPrice())
+                .subPrice(ordersLine.getQuantity() * productResponseDto.getPrice())
                 .build();
     }
 

@@ -1,62 +1,111 @@
-# orders
+# whatap-orders
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+와탭랩스 백엔드 개발자 채용 과제 프로젝트 orders server입니다.
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+---
 
-## Running the application in dev mode
+목차
 
-You can run your application in dev mode that enables live coding using:
+1. [기술 요구 사항](#기술-요구-사항)
+2. [기능 요구 사항](#기능-요구-사항)
+3. [디렉토리 구조](#디렉토리-구조)
+4. [데이터베이스 스키마](#데이터베이스-스키마)
+5. [API 명세](#api-명세)
 
-```shell script
-./gradlew quarkusDev
+---
+
+## 기술 요구 사항
+
+언어: Java 17 <br>
+프레임워크: Quarkus 3.8.1 <br>
+데이터베이스: PostgreSQL <br>
+ORM: panache
+
+---
+
+## 기능 요구 사항
+
+1. 주문 조회
+2. 주문 목록 조회
+3. 주문 생성
+4. 주문 변경
+5. 주문 삭제
+6. 데이터베이스 지연
+
+---
+
+## 디렉토리 구조
+
+```
+java
++--adapter
+| +--ProductAdapter.java
+|
++--controller
+| +--OrdersController.java
+| |
+| +--UtilityController.java
+|
++--dto
+| +--req
+| | +--OrdersLineRequestDto.java
+| | |
+| | +--OrdersRequestDto.java
+| | |
+| | +--OrdersUpdateRequestDto.java
+| |
+| +--res
+| +--OrdersResponseDto.java
+| |
+| +--ProductResponseDto.java
+|
++--entity
+| +--Orders.java
+| |
+| +--OrdersLine.java
+|
++--exception
+| +--CustomException.java
+| |
+| +--CustomExceptionHandler.java
+| |
+| +--OrdersNotFoundException.java
+| |
+| +--ProductNotFoundException.java
+| |
+| +--SleepQueryException.java
+|
++--repository
+| +--OrdersLineRepository.java
+| |
+| +--OrdersRepository.java
+|
++--service
++--OrdersLineService.java
+|
++--OrdersService.java
+|
++--ProductService.java
+|
++--UtilityService.java
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
+---
 
-## Packaging and running the application
+## 데이터베이스 스키마
 
-The application can be packaged using:
+![img.png](img.png)
 
-```shell script
-./gradlew build
-```
+---
 
-It produces the `quarkus-run.jar` file in the `build/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `build/quarkus-app/lib/` directory.
+## API 명세
 
-The application is now runnable using `java -jar build/quarkus-app/quarkus-run.jar`.
+| API          | API URL                    | Method | Request                                                                                                                                             | Response                                                                                                                                                                                                                                                                                                      | StatusCode |
+|--------------|----------------------------|--------|-----------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| orderProduct | /orders/add                | POST   | {<br> "userId" : 0,<br> "ordersLineRequestDto" : [<br> {<br>   "ordersLineId" int,<br> "productId": int,<br>   "quantity" : int<br>    }<br> ]<br>} | Integer                                                                                                                                                                                                                                                                                                       | 201        |
+| getOrder     | /orders/get/{orders_id}    | GET    |                                                                                                                                                     | {<br>  "orderId" : int,<br> "userId" : int,<br> "orderDate" : DATETIME,<br> "modifiedDate" : DATETIME,<br> "totalPrice" : Double,<br> "ordersLineInfos" : [<br> {<br> "ordersLineId" : int,<br> "productId" : int,<br> "productName" : "string",<br> "quantity" : int,<br> "subTotal" : Double<br>}<br>]<br>} | 200        |
+| getOrders    | /orders/get                | GET    |                                                                                                                                                     | {<br>  "orderId" : int,<br> "userId" : int,<br> "orderDate" : DATETIME,<br> "modifiedDate" : DATETIME,<br> "totalPrice" : Double,<br> "ordersLineInfos" : [<br> {<br> "ordersLineId" : int,<br> "productId" : int,<br> "productName" : "string",<br> "quantity" : int,<br> "subTotal" : Double<br>}<br>]<br>} | 200        |
+| changeOrder  | /orders/update             | PUT    | {<br> "ordersId" : int,<br> "ordersLineRequestDto" : [<br>{<br> "ordersLineId" : int,<br>"productId" : int,<br> "quantity" : int,<br>}<br>]<br>}    | Intger                                                                                                                                                                                                                                                                                                        | 201        |
+| deleteOrder  | /orders/delete/{orders_id} | DELETE |                                                                                                                                                     |                                                                                                                                                                                                                                                                                                               | 204        |
+| sleep        | /utility/sleep/{time}      | GET    |                                                                                                                                                     | "string"                                                                                                                                                                                                                                                                                                      | 200        |
 
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./gradlew build -Dquarkus.package.type=uber-jar
-```
-
-The application, packaged as an _über-jar_, is now runnable using `java -jar build/*-runner.jar`.
-
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./gradlew build -Dquarkus.package.type=native
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
-
-```shell script
-./gradlew build -Dquarkus.package.type=native -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./build/orders-1.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult https://quarkus.io/guides/gradle-tooling.
-
-## Related Guides
-
-- REST resources for Hibernate ORM with Panache ([guide](https://quarkus.io/guides/rest-data-panache)): Generate Jakarta
-  REST resources for your Hibernate Panache entities and repositories
-- RESTEasy Reactive's REST Client ([guide](https://quarkus.io/guides/rest-client-reactive)): Call REST services
-  reactively
-- JDBC Driver - PostgreSQL ([guide](https://quarkus.io/guides/datasource)): Connect to the PostgreSQL database via JDBC

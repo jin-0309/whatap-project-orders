@@ -1,23 +1,18 @@
 package service;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import dto.req.OrdersLineRequestDto;
 import dto.req.OrdersRequestDto;
 import entity.Orders;
 import entity.OrdersLine;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import repository.OrdersLineRepository;
-import repository.OrdersRepository;
 
 @QuarkusTest
 @Transactional
@@ -83,8 +78,9 @@ class OrdersLineServiceTest {
                 .build();
         OrdersLine ordersLine1 = ordersLineService.save(orders, ordersLineRequestDto1);
         OrdersLine ordersLine2 = ordersLineService.save(orders, ordersLineRequestDto2);
-        List<OrdersLine> result = ordersLineService.getOrdersLinesByDtos(List.of(ordersLineRequestDto1, ordersLineRequestDto2), orders);
-        Assertions.assertEquals(2,result.size());
+        List<OrdersLine> result = ordersLineService.getOrdersLines(
+                List.of(ordersLineRequestDto1, ordersLineRequestDto2), orders);
+        Assertions.assertEquals(2, result.size());
         Assertions.assertEquals(ordersLine1.getOrders(), result.get(0).getOrders());
         Assertions.assertEquals(ordersLine2.getOrders(), result.get(1).getOrders());
     }
