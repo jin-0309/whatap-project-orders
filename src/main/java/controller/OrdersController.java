@@ -35,7 +35,7 @@ public class OrdersController {
     }
 
     @POST
-    @Path("/add")
+    @Path("")
     @Operation(summary = "주문 추가")
     @APIResponse(responseCode = "201", content = {@Content(schema = @Schema(implementation = Long.class))})
     public Response orderProduct(OrdersRequestDto dto) {
@@ -43,25 +43,25 @@ public class OrdersController {
     }
 
     @GET
-    @Path("/get/{orders_id}")
+    @Path("/{orders_id}")
     @Operation(summary = "주문 조회")
     @APIResponse(responseCode = "200",
-    content = @Content(schema = @Schema(implementation = OrdersResponseDto.class)))
+            content = @Content(schema = @Schema(implementation = OrdersResponseDto.class)))
     public Response getOrder(@PathParam("orders_id") Long ordersId) {
         return Response.ok(ordersService.findById(ordersId)).build();
     }
 
     @GET
-    @Path("/get")
+    @Path("list")
     @Operation(summary = "주문 목록 조회")
     @APIResponse(responseCode = "200",
-    content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = OrdersResponseDto.class)))
+            content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = OrdersResponseDto.class)))
     public Response getOrders() {
         return Response.ok(ordersService.findAll()).build();
     }
 
     @DELETE
-    @Path("/delete/{orders_id}")
+    @Path("/{orders_id}")
     @Operation(summary = "주문 삭제")
     @APIResponse(responseCode = "204")
     public Response deleteOrder(@PathParam("orders_id") Long ordersId) {
@@ -70,10 +70,10 @@ public class OrdersController {
     }
 
     @PUT
-    @Path("/update")
+    @Path("")
     @Operation(summary = "주문 변경")
     @APIResponse(responseCode = "201",
-    content = @Content(schema = @Schema(implementation = Long.class)))
+            content = @Content(schema = @Schema(implementation = Long.class)))
     public Response changeOrder(OrdersUpdateRequestDto dto) {
         return Response.status(Status.CREATED).entity(ordersService.update(dto)).build();
     }
